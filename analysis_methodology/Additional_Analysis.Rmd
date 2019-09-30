@@ -1,7 +1,7 @@
 ---
 title: "Traffic Count Analysis to Inform Model Validation"
 author: "Reid Haefer"
-date: '8/30/2019'
+date:
 output:
   html_document:
     code_folding: hide
