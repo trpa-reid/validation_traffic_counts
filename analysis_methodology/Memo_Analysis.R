@@ -17,7 +17,7 @@ map<-continuous %>% distinct(lat,lon, station) %>%
 
 tahoe_map <- get_map(location = "Lake Tahoe, CA", zoom = 10)
 
-ggmap(tahoe_map) + geom_sf(data=map, aes(fill=station), color="red", size=1.6, inherit.aes = FALSE) +
+ggmap(tahoe_map) + geom_sf(data=map, aes(fill=station), color="red", size=2.6, inherit.aes = FALSE) +
   theme(axis.text.x=element_blank(),axis.text.y=element_blank(),axis.title.x=element_blank(),axis.title.y=element_blank(),axis.ticks.x=element_blank(),axis.ticks.y=element_blank(), legend.position = "none")
 
 ggsave("H:/model/model_update_2019/validation/charts/map.png", height=5, width=4)
@@ -43,7 +43,7 @@ mar<-continuous %>%
   summarise(Count=sum(Count, na.rm=T)) %>%
   mutate(median=median(Count))
 
-unique(july$median)/unique(mar$median)
+1-unique(mar$median)/unique(july$median)
 
 jan<-continuous %>% 
   filter(month=="Jan") %>%
@@ -59,8 +59,16 @@ dec<-continuous %>%
   summarise(Count=sum(Count, na.rm=T)) %>%
   mutate(median=median(Count))
 
+feb<-continuous %>% 
+  filter(month=="Feb") %>%
+  mutate(Day1=as.character(Day)) %>%
+  group_by(Day1) %>% 
+  summarise(Count=sum(Count, na.rm=T)) %>%
+  mutate(median=median(Count))
+
 1-unique(jan$median)/unique(july$median)
 1-unique(dec$median)/unique(july$median)
+1-unique(feb$median)/unique(july$median)
 
 ## weekend comparison
 
@@ -91,7 +99,7 @@ continuous %>%
   summarise(day_month_median=median(Count)) %>%
   ggplot(aes(month, day_month_median, group=weekday, fill=weekday)) + geom_bar(position="dodge", stat="identity") + 
   scale_fill_manual(values=c("#08D6DA", "#06378D", "#BE0B05", "#F7A537", "#E2D103", "#35AA27", "#940CD8")) + 
-  geom_hline(aes(yintercept=108579),color="black",size=1,linetype="dashed") + theme_minimal() +
+  geom_hline(aes(yintercept=annual_median),color="black",size=1,linetype="dashed") + theme_minimal() +
   theme(axis.title.y=element_blank(),axis.title.x=element_blank(), legend.position="bottom", legend.title = element_blank()) +
   ggtitle("Median Daily Total Counts by Day of Week and Month") +
   geom_text(aes(2.8,annual_median,label = paste0("Annual Median: ",format(annual_median,big.mark=",")), vjust = -1.8)) +
@@ -409,3 +417,4 @@ mon_tue_wed_thu %>% ggplot(aes(Day1, Count)) +
   ggtitle("Mon, Tues, Wed, Thurs Day Daily Counts - Early June, Late Aug, Mid Sept")
 
 ggsave("H:/model/model_update_2019/validation/charts/chart5.png", height=4, width=8)
+

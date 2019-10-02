@@ -25,9 +25,7 @@ library(pacman)
 p_load(tidyverse, readxl, lubridate, purrr, janitor, scales, plotly, tmap, leaflet, DT,lubridate,sf,xfun, ggridges, ggmap)
 ```
 
-```{r eval=F, message=FALSE, warning=FALSE}
-
-```{r warning=F, message= F, include=F}
+```{r message=FALSE, warning=FALSE, echo=F}
 continuous<-read_csv("H:/model/model_update_2019/validation/continuous.csv") %>%
   mutate(weekday=wday(Date, label=TRUE), month=month(Date, label=TRUE), Day1=as.character(Day))
 ```
@@ -41,14 +39,13 @@ map<-continuous %>% distinct(lat,lon, station)
   leaflet() %>% addTiles() %>% addMarkers(popup = paste(map$station))
 ```
 
-## Total Daily Totals
+## Raw Daily Totals
 
 ```{r, warning=F, message=F, out.width="130%"}
 ggplotly(
-  continuous %>% group_by(Day) %>% 
-    summarise(Count=sum(Count)) %>% ggplot(aes(Day, Count)) + 
-    geom_col() + theme(axis.title.x=element_blank()) +
-    theme_minimal() + scale_x_date() 
+  continuous %>% group_by(Day, station) %>% 
+    summarise(Count=sum(Count)) %>% ggplot(aes(Day, Count, group=station, fill=station)) + 
+    geom_col()+theme_minimal() + theme(axis.title.x=element_blank(), legend.position = "none", axis.title.y=element_blank()) + scale_x_date() 
   )
 ```
 
@@ -58,8 +55,8 @@ ggplotly(
 ggplotly(
 ggplot(data = continuous, aes(x = Count)) + 
    geom_histogram(aes(y=..density..),colour="black", fill="white") +
-  geom_density(alpha=.2, fill="#FF6666") + 
-   theme(axis.title.x = element_blank(), axis.text.y=element_blank(), axis.title.y=element_blank()) + theme_minimal()
+  geom_density(alpha=.2, fill="#FF6666")+ theme_minimal() + 
+   theme(axis.title.x = element_blank(), axis.text.y=element_blank(), axis.title.y=element_blank()) 
 )
 ```
 
@@ -89,7 +86,7 @@ all_days<- continuous %>%
   ungroup()
 
 ggplotly(
-  ggplot(all_days, aes(Day,Count, group=weekday, color=weekday)) + geom_line() + theme_minimal()) %>%
+  ggplot(all_days, aes(Day,Count, group=weekday, color=weekday)) + geom_line() + theme_minimal() + theme(axis.title.y = element_blank())) %>%
   layout(legend = list(orientation = "h", x = 0.0, y = -0.3)) 
 
 ```
@@ -105,7 +102,7 @@ continuous %>%
 ggplot(aes(x = weekday, y = Count, color = weekday)) +
   theme(axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank()) +
   geom_boxplot(outlier.shape = NA) +
-  facet_grid(~month) + theme(legend.position="bottom") + ggtitle("Traffic Counts") +
+  facet_grid(~month) + theme(legend.position="bottom") +
   scale_color_manual(values=c("#08D6DA", "#06378D", "#BE0B05", "#F7A537", "#DEF006", "#35AA27", "#940CD8")), height=800) %>%
   layout(legend = list(orientation = "h", x = 0.0, y = -0.2)) %>%
   style(legendgroup = NULL)
@@ -148,13 +145,13 @@ continuous %>%
 ```{r}
 ggplotly(
 continuous %>% 
-  group_by(Day, month) %>%
+  group_by(Day, month, station) %>%
   summarise(Count=sum(Count,na.rm=T)) %>%
-  group_by(month) %>%
+  group_by(month, station) %>%
   summarise(Count=median(Count)) %>% 
-  ggplot(aes(month, Count)) + geom_col() + theme_minimal() +
-   theme(legend.title = element_blank(), legend.position = 'bottom', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.y=element_blank(),
-        axis.text.x=element_text(size=12)) 
+  ggplot(aes(month, Count, group=station, fill=station)) + geom_col() + theme_minimal() +
+   theme(legend.title = element_blank(), axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.y=element_blank(),
+        axis.text.x=element_text(size=12), legend.position = "none") 
 )
 ```
 
@@ -176,13 +173,13 @@ continuous %>%
 ```{r}
 ggplotly(
 continuous %>% 
-  group_by(Day, weekday) %>%
+  group_by(Day, weekday,station) %>%
   summarise(Count=sum(Count,na.rm=T)) %>%
-  group_by(weekday) %>%
+  group_by(weekday, station) %>%
   summarise(Count=median(Count)) %>% 
-  ggplot(aes(weekday, Count)) + geom_col() + theme_minimal() +
-   theme(legend.title = element_blank(), legend.position = 'bottom', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.x=element_blank(),
-        axis.text.y=element_text(size=12)) + coord_flip()
+  ggplot(aes(weekday, Count, group=station, fill=station)) + geom_col() + theme_minimal() +
+   theme(legend.title = element_blank(), axis.title.y=element_blank(),axis.title.x=element_blank(), axis.text.y=element_blank(),
+        axis.text.x=element_text(size=12), legend.position = "none")
 )
 ```
 
@@ -193,12 +190,12 @@ continuous %>%
 ggplotly(
 continuous %>% 
   filter(ext_int=="External Station") %>%
-  group_by(Day, weekday) %>%
+  group_by(Day, weekday, station) %>%
   summarise(Count=sum(Count,na.rm=T)) %>% 
-  group_by(weekday) %>%
+  group_by(weekday, station) %>%
   summarise(Count=median(Count)) %>% 
-  ggplot(aes(weekday, Count,)) + geom_col() + theme_minimal() +
-  theme(legend.title = element_blank(), legend.position = 'bottom', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.x=element_blank(),
+  ggplot(aes(weekday, Count, group=station, fill=station)) + geom_col() + theme_minimal() +
+  theme(legend.title = element_blank(), legend.position = 'none', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.x=element_blank(),
         axis.text.y=element_text(size=12)) + coord_flip()
 )
 ```
@@ -209,15 +206,13 @@ continuous %>%
 ggplotly(
 continuous %>% 
   filter(ext_int=="External Station") %>%
-  group_by(Day, month) %>%
+  group_by(Day, month, station) %>%
   summarise(Count=sum(Count,na.rm=T)) %>%
-  group_by(month) %>%
+  group_by(month, station) %>%
   summarise(Count=median(Count)) %>%
-  ggplot(aes(month, Count)) + geom_col() + theme_minimal()  +
- theme(legend.title = element_blank(), legend.position = 'bottom', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.x=element_blank(),
+  ggplot(aes(month, Count, group=station, fill=station)) + geom_col() + theme_minimal()  +
+ theme(legend.title = element_blank(), legend.position = 'none', axis.title.x=element_blank(),axis.title.y=element_blank(), axis.text.x=element_blank(),
         axis.text.y=element_text(size=12))  + coord_flip()
 )
 ```
-
-
 
