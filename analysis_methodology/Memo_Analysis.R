@@ -267,7 +267,7 @@ scenario<-bind_rows(
     "cv"=cv(mon_tue_wed$Count),
     "n"=nrow(mon_tue_wed),
     "percentile"=percentile(mean(mon_tue_wed$Count)),
-    "ranked"=round(341-(percentile(mean(mon_tue_wed$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(mon_tue_wed$Count)) * 312),0),
     "time period"="Mondays-Wednesdays"
   ),
   #mon tue wed thu scenario
@@ -278,7 +278,7 @@ scenario<-bind_rows(
     "cv"=cv(mon_tue_wed_thu$Count),
     "n"=nrow(mon_tue_wed_thu),
     "percentile"=percentile(mean(mon_tue_wed_thu$Count)),
-    "ranked"=round(341-(percentile(mean(mon_tue_wed_thu$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(mon_tue_wed_thu$Count)) * 312),0),
     "time period" = "Mondays-Thursdays"
   ),
   #mon tue wed thu fri scenario
@@ -289,7 +289,7 @@ scenario<-bind_rows(
     "cv"=cv(mon_tue_wed_thu_fri$Count),
     "n"=nrow(mon_tue_wed_thu_fri),
     "percentile"=percentile(mean(mon_tue_wed_thu_fri$Count)),
-    "ranked"=round(341-(percentile(mean(mon_tue_wed_thu_fri$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(mon_tue_wed_thu_fri$Count)) * 312),0),
     "time period" = "Mondays-Fridays"
   ),
   #fri scenario
@@ -300,7 +300,7 @@ scenario<-bind_rows(
     "cv"=cv(fri$Count),
     "n"=nrow(fri),
     "percentile"=percentile(mean(fri$Count)),
-    "ranked"=round(341-(percentile(mean(fri$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(fri$Count)) * 312),0),
     "time period" = "Fridays"
   ),
   #sat and sun scenario
@@ -311,7 +311,7 @@ scenario<-bind_rows(
     "cv"=cv(sat_sun$Count),
     "n"=nrow(sat_sun),
     "percentile"=percentile(mean(sat_sun$Count)),
-    "ranked"=round(341-(percentile(mean(sat_sun$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(sat_sun$Count)) * 312),0),
     "time period" = "Saturdays & Sundays"
   ),
   #august scenario
@@ -322,7 +322,7 @@ scenario<-bind_rows(
     "cv"=cv(aug$Count),
     "n"=nrow(aug),
     "percentile"=percentile(mean(aug$Count)),
-    "ranked"=round(341-(percentile(mean(aug$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(aug$Count)) * 312),0),
     "time period" = "All Days in August"
   ),
   #all days annual scenario
@@ -333,7 +333,7 @@ scenario<-bind_rows(
     "cv"=cv(year$Count),
     "n"=nrow(year),
     "percentile"=percentile(mean(year$Count)),
-    "ranked"=round(341-(percentile(mean(year$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(year$Count)) * 312),0),
     "time period" = "All Days in 2018"
   ),
   #all summer weekdays - june, july, aug, sep
@@ -344,7 +344,7 @@ scenario<-bind_rows(
     "cv"=cv(sum_week$Count),
     "n"=nrow(sum_week),
     "percentile"=percentile(mean(sum_week$Count)),
-    "ranked"=round(341-(percentile(mean(sum_week$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(sum_week$Count)) * 312),0),
     "time period" = "All Summer Weekdays (June-Sep, Mon-Thurs)"
   ),
   #all summer days - june, july, aug, sep
@@ -355,13 +355,12 @@ scenario<-bind_rows(
     "cv"=cv(summer$Count),
     "n"=nrow(summer),
     "percentile"=percentile(mean(summer$Count)),
-    "ranked"=round(341-(percentile(mean(summer$Count)) * 341),0),
+    "ranked"=round(312-(percentile(mean(summer$Count)) * 312),0),
     "time period" = "All Summer Days (June-Sep)"
   )
 ) 
 
-sign_formatter <- formatter("span", 
-                            style = x ~ style(font.weight = "bold",color = ifelse(x == "Mondays-Thursdays", "red", "black")))
+sign_formatter <- formatter("span", style = x ~ style(font.weight = "bold",color = ifelse(x == "Mondays-Thursdays", "red", "black")))
 
 formattable(
   scenario %>% select(time.period, everything()) %>%

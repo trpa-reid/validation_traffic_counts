@@ -60,7 +60,6 @@ ggplot(data = continuous, aes(x = Count)) +
 )
 ```
 
-
 ## Daily Count Distribution
 
 ```{r warning=F, message=F, out.width="150%"}
@@ -125,6 +124,7 @@ continuous %>%
 )
 ```
 
+
 ## Daily Count Distribution by Month of Year
 
 ```{r warning=F, message=F, out.width="130%"}
@@ -138,6 +138,16 @@ continuous %>%
   theme_minimal() + scale_fill_discrete() + 
   theme(axis.title.y = element_blank(), legend.position="none", axis.text.y=element_text(size=14), axis.text.x=element_text(size=14), axis.title.x=element_blank())
 
+```
+
+```{r}
+ggplotly(
+continuous %>% 
+  group_by(Day, month) %>%
+  summarise(Count=sum(Count,na.rm=T)) %>%
+  ggplot(aes(month, Count)) + geom_violin() + theme_minimal() + theme(axis.title.y=element_blank(), axis.title.x=element_blank()) +
+  scale_y_continuous(labels=scales::comma)
+)
 ```
 
 ## Median Daily Count by Month of Year
@@ -168,6 +178,15 @@ continuous %>%
   theme(axis.title.y = element_blank(), legend.position="none", axis.text.y=element_text(size=14), axis.text.x=element_text(size=14), axis.title.x=element_blank())
 ```
 
+```{r}
+ggplotly(
+continuous %>% 
+  group_by(Day, weekday) %>%
+  summarise(Count=sum(Count,na.rm=T)) %>%
+  ggplot(aes(weekday, Count)) + geom_violin() + theme_minimal() + theme(axis.title.y=element_blank(), axis.title.x=element_blank()) +
+  scale_y_continuous(labels=scales::comma)
+)
+```
 ## Median Daily Count by Day of Week
 
 ```{r}
@@ -183,7 +202,20 @@ continuous %>%
 )
 ```
 
-## Daily Count Distribution by Day of Week
+## Station Type Counts - Weekend vs Weekday
+
+```{r warning=F, message=F, out.width="150%"}
+ggplotly(
+continuous %>% 
+  group_by(wday_wknd, ext_int,Day) %>% 
+  summarise(Count=sum(Count, na.rm=T)) %>%
+  ggplot(aes(Day,Count)) + geom_line(size=1) +
+  facet_grid(wday_wknd ~ ext_int ) +
+  theme(legend.position="bottom", legend.title = element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(),
+        axis.text.x=element_text(angle=34, hjust=1)) +
+  scale_y_continuous(labels=scales::comma)
+)
+```
 
 ## Counts for Entry/Exit Stations only by Day of Week
 ```{r}
@@ -202,7 +234,7 @@ continuous %>%
 
 ## Counts Entry/Exit Stations only by Month
 
-```{r}
+```{r }
 ggplotly(
 continuous %>% 
   filter(ext_int=="External Station") %>%
@@ -215,4 +247,20 @@ continuous %>%
         axis.text.y=element_text(size=12))  + coord_flip()
 )
 ```
+
+## All Daily Counts by Station and Time Period
+
+```{r warning=F, message=F, out.width="140%"}
+ggplotly(
+continuous %>%
+  group_by(Day, weekday, month, station, ext_int) %>%
+  summarise(Count=sum(Count)) %>%
+  mutate(dummy="") %>%
+ggplot(aes(dummy,station,  fill = Count)) + 
+  geom_tile(colour = "white") + 
+  facet_grid(weekday~month) + 
+  scale_fill_gradient(low="red", high="green") +
+  theme(axis.ticks.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.text.y=element_text(size=7), axis.text.x=element_blank()), height = 950)
+```
+
 
